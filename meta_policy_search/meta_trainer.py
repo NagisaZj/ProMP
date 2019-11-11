@@ -2,7 +2,7 @@ import tensorflow as tf
 import numpy as np
 import time
 from meta_policy_search.utils import logger
-
+#from rlkit.core import logger, eval_util
 
 class Trainer(object):
     """
@@ -81,7 +81,7 @@ class Trainer(object):
                 logger.log("\n ---------------- Iteration %d ----------------" % itr)
                 logger.log("Sampling set of tasks/goals for this meta-batch...")
 
-                self.sampler.update_tasks()
+                self.sampler.update_tasks(train=1)
                 self.policy.switch_to_pre_update()  # Switch to pre-update policy
 
                 all_samples_data, all_paths = [], []

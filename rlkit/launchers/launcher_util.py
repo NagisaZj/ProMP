@@ -263,7 +263,8 @@ def setup_logger(
     if first_time:
         log_dir = create_log_dir(exp_prefix, exp_id=exp_id, seed=seed,
                                  base_log_dir=base_log_dir)
-
+    print(log_dir)
+    print('aaaaaaaaaaaaaaaaaaa')
     if variant is not None:
         logger.log("Variant:")
         logger.log(json.dumps(dict_to_safe_json(variant), indent=2))
