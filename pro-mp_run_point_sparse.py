@@ -1,5 +1,5 @@
 from meta_policy_search.baselines.linear_baseline import LinearFeatureBaseline
-from meta_policy_search.envs.point_envs.point_env_2d_corner import MetaPointEnvCorner
+from meta_policy_search.envs.point_envs.point_env_2d_corner import MetaPointEnvCorner, SparsePointEnv
 from meta_policy_search.envs.normalized_env import normalize
 from meta_policy_search.meta_algos.pro_mp import ProMP
 from meta_policy_search.meta_trainer import Trainer
@@ -97,11 +97,15 @@ if __name__=="__main__":
 
             'baseline': 'LinearFeatureBaseline',
 
-            'env': 'MetaPointEnvCorner',
+            'env': 'SparsePointEnv',
+            'sparse_rewards':1,
+            "num_tasks":100,
+            "num_tasks_train":80,
+            "num_tasks_eval":20,
 
             # sampler config
-            'rollouts_per_meta_task': 20,
-            'max_path_length': 100,
+            'rollouts_per_meta_task': 4,
+            'max_path_length': 32,
             'parallel': True,
 
             # sample processor config
@@ -121,7 +125,7 @@ if __name__=="__main__":
             'target_inner_step': 0.01,
             'init_inner_kl_penalty': 5e-4,
             'adaptive_inner_kl_penalty': False, # whether to use an adaptive or fixed KL-penalty coefficient
-            'n_itr': 1001, # number of overall training iterations
+            'n_itr': 10001, # number of overall training iterations
             'meta_batch_size': 40, # number of sampled meta-tasks per iterations
             'num_inner_grad_steps': 1, # number of inner / adaptation gradient steps
 
