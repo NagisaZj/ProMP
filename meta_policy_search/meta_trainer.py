@@ -129,7 +129,7 @@ class Trainer(object):
 
                 """ ------------------- Logging Stuff --------------------------"""
                 logger.logkv('Itr', itr)
-                logger.logkv('n_timesteps', self.sampler.total_timesteps_sampled)
+                logger.logkv('Number of env steps total', self.sampler.total_timesteps_sampled)
 
                 logger.logkv('Time-OuterStep', time.time() - time_outer_step_start)
                 logger.logkv('Time-TotalInner', total_inner_time)
