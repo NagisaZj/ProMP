@@ -1,0 +1,27 @@
+{
+  "adaptive_inner_kl_penalty": false,
+  "base_log_dir": "outputProMP",
+  "baseline": "LinearFeatureBaseline",
+  "clip_eps": 0.3,
+  "discount": 0.99,
+  "env": "HalfCheetahRandDirecEnv",
+  "gae_lambda": 1,
+  "hidden_sizes": [
+    64,
+    64
+  ],
+  "init_inner_kl_penalty": 0.0005,
+  "inner_lr": 0.1,
+  "learn_std": true,
+  "learning_rate": 0.001,
+  "max_path_length": 100,
+  "meta_batch_size": 40,
+  "n_itr": 1001,
+  "normalize_adv": true,
+  "num_inner_grad_steps": 1,
+  "num_promp_steps": 5,
+  "parallel": true,
+  "rollouts_per_meta_task": 20,
+  "seed": 1,
+  "target_inner_step": 0.01
+}

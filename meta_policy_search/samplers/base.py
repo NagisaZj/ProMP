@@ -148,6 +148,9 @@ class SampleProcessor(object):
             logger.logkv(log_prefix + 'MaxReturn', np.max(undiscounted_returns))
             logger.logkv(log_prefix + 'MinReturn', np.min(undiscounted_returns))
 
+        if '1' in log_prefix:
+            logger.logkv('AverageReturn_all_test_tasks_last', np.mean(undiscounted_returns))
+
     def _compute_advantages(self, paths, all_path_baselines):
         assert len(paths) == len(all_path_baselines)
 
