@@ -128,7 +128,9 @@ if __name__=="__main__":
             'n_itr': 10001, # number of overall training iterations
             'meta_batch_size': 40, # number of sampled meta-tasks per iterations
             'num_inner_grad_steps': 1, # number of inner / adaptation gradient steps
-            'base_log_dir':'outputProMP',
+            "util_params":
+                {'base_log_dir':'outputProMP'}
+            ,
 
         }
 
