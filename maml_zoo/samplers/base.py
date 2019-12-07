@@ -138,11 +138,13 @@ class SampleProcessor(object):
         # compute log stats
         average_discounted_return = np.mean([path["returns"][0] for path in paths])
         undiscounted_returns = [sum(path["rewards"]) for path in paths]
+        last_return = np.mean(paths[0]["rewards"])
 
         if log == 'reward':
             logger.logkv(log_prefix + 'AverageReturn', np.mean(undiscounted_returns))
 
         elif log == 'all' or log is True:
+            logger.logkv('AverageReturn_all_test_tasks_last', last_return)
             logger.logkv(log_prefix + 'AverageDiscountedReturn', average_discounted_return)
             logger.logkv(log_prefix + 'AverageReturn', np.mean(undiscounted_returns))
             logger.logkv(log_prefix + 'NumTrajs', len(paths))

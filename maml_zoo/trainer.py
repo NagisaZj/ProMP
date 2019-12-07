@@ -97,6 +97,7 @@ class Trainer(object):
                 """ ------------------- Logging Stuff --------------------------"""
                 logger.logkv('Itr', itr)
                 logger.logkv('n_timesteps', self.sampler.total_timesteps_sampled)
+                logger.logkv('Number of env steps total', self.sampler.total_timesteps_sampled)
 
                 logger.logkv('Time-Optimization', time.time() - time_optimization_step_start)
                 logger.logkv('Time-SampleProc', np.sum(proc_samples_time))
