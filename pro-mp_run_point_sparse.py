@@ -17,7 +17,7 @@ import argparse
 import time
 
 meta_policy_search_path = '/'.join(os.path.realpath(os.path.dirname(__file__)).split('/')[:-1])
-
+meta_policy_search_path='.'
 def main(config):
     set_seed(config['seed'])
 
@@ -81,7 +81,7 @@ if __name__=="__main__":
 
     parser = argparse.ArgumentParser(description='ProMP: Proximal Meta-Policy Search')
     parser.add_argument('--config_file', type=str, default='', help='json file with run specifications')
-    parser.add_argument('--dump_path', type=str, default=meta_policy_search_path + '/data/pro-mp/run_%d' % idx)
+    parser.add_argument('--dump_path', type=str, default=meta_policy_search_path + '/data/pro-mp/pointnew/run_%d' % idx)
 
     args = parser.parse_args()
 
@@ -93,7 +93,7 @@ if __name__=="__main__":
     else: # use default config
 
         config = {
-            'seed': 1,
+            'seed': 100,
 
             'baseline': 'LinearFeatureBaseline',
 
@@ -128,7 +128,9 @@ if __name__=="__main__":
             'n_itr': 10001, # number of overall training iterations
             'meta_batch_size': 40, # number of sampled meta-tasks per iterations
             'num_inner_grad_steps': 1, # number of inner / adaptation gradient steps
-
+            "util_params":
+                {'base_log_dir': 'outputProMP'}
+            ,
         }
 
     # configure logger

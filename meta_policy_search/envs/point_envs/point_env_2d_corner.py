@@ -213,7 +213,7 @@ class SparsePointEnv(PointEnv):
     def log_diagnostics(self, *args):
         pass
 
-    def sample_tasks(self, n_tasks,train):
+    def sample_tasks(self, n_tasks,train=1):
         if train:
             return [self.goals[idx] for idx in np.random.choice(range(1000), size=n_tasks)]
         else:
