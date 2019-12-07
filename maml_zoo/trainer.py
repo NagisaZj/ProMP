@@ -42,7 +42,8 @@ class Trainer(object):
         self.start_itr = start_itr
         self.task = task
         if sess is None:
-            sess = tf.Session()
+            gpu_options = tf.GPUOptions(allow_growth=True)
+            sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
         self.sess = sess
 
     def train(self):
