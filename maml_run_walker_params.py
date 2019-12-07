@@ -91,7 +91,7 @@ if __name__=="__main__":
     else: # use default config
 
         config = {
-            'seed': 1,
+            'seed': 100,
 
             'baseline': 'LinearFeatureBaseline',
 
