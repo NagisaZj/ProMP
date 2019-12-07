@@ -70,3 +70,6 @@ class ReacherGoalEnv_sparse(ReacherEnv_):
             task: task of the meta-learning environment
         """
         self._goal = task
+
+    def log_diagnostics(self,paths,prefix):
+        return
