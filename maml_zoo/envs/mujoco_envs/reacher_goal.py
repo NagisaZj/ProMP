@@ -1,6 +1,6 @@
 import numpy as np
 
-from rlkit.envs.ant_multitask_base import MultitaskAntEnv
+
 
 from gym.envs.mujoco.reacher import ReacherEnv as ReacherEnv_
 
