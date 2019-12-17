@@ -6,21 +6,24 @@ from gym.envs.mujoco.mujoco_env import MujocoEnv
 
 class AntRandGoalEnv(MetaEnv, gym.utils.EzPickle, MujocoEnv):
     def __init__(self):
+        self.goal_radius = 0.7
         self.set_task(self.sample_tasks(1)[0])
         MujocoEnv.__init__(self, 'ant.xml', 5)
         gym.utils.EzPickle.__init__(self)
 
-    def sample_tasks(self, n_tasks):
-        a = np.random.random(n_tasks) * 2 * np.pi
-        r = 3 * np.random.random(n_tasks) ** 0.5
-        return np.stack((r * np.cos(a), r * np.sin(a)), axis=-1)
+    def sample_tasks(self, num_tasks):
+        a = np.random.random(num_tasks) * 1 * np.pi
+        r = 1
+        goals = np.stack((r * np.cos(a), r * np.sin(a)), axis=-1)
+        tasks = [{'goal': goal} for goal in goals]
+        return tasks
 
     def set_task(self, task):
         """
         Args:
             task: task of the meta-learning environment
         """
-        self.goal_pos = task
+        self.goal_pos = task['goal']
 
     def get_task(self):
         """
@@ -29,25 +32,39 @@ class AntRandGoalEnv(MetaEnv, gym.utils.EzPickle, MujocoEnv):
         """
         return self.goal_pos
 
-    def step(self, a):
-        self.do_simulation(a, self.frame_skip)
-        xposafter = self.get_body_com("torso")
+    def sparsify_rewards(self, r):
+        ''' zero out rewards when outside the goal radius '''
+        # mask = (r >= -self.goal_radius).astype(np.float32)
+        # r = r * mask
+        if r < -self.goal_radius:
+            r = -2
+        r = r + 2
+        return r
+
+    def step(self, action):
+        self.do_simulation(action, self.frame_skip)
+        xposafter = np.array(self.get_body_com("torso"))
+
         goal_reward = -np.sum(np.abs(xposafter[:2] - self.goal_pos))  # make it happy, not suicidal
-        ctrl_cost = .1 * np.square(a).sum()
-        contact_cost = 0.5 * 1e-3 * np.sum(np.square(np.clip(self.sim.data.cfrc_ext, -1, 1)))
-        # survive_reward = 1.0
+
+        ctrl_cost = .1 * np.square(action).sum()
+        contact_cost = 0.5 * 1e-3 * np.sum(
+            np.square(np.clip(self.sim.data.cfrc_ext, -1, 1)))
         survive_reward = 0.0
         reward = goal_reward - ctrl_cost - contact_cost + survive_reward
+        sparse_reward = self.sparsify_rewards(reward) - ctrl_cost - contact_cost + survive_reward
+        # reward = sparse_reward
+        # make sparse rewards positive
         state = self.state_vector()
-        # notdone = np.isfinite(state).all() and 1.0 >= state[2] >= 0.
-        # done = not notdone
         done = False
         ob = self._get_obs()
         return ob, reward, done, dict(
-            reward_forward=goal_reward,
+            goal_forward=goal_reward,
             reward_ctrl=-ctrl_cost,
             reward_contact=-contact_cost,
-            reward_survive=survive_reward)
+            reward_survive=survive_reward,
+            sparse_reward=sparse_reward
+        )
 
     def _get_obs(self):
         return np.concatenate([
@@ -66,15 +83,7 @@ class AntRandGoalEnv(MetaEnv, gym.utils.EzPickle, MujocoEnv):
         self.viewer.cam.distance = self.model.stat.extent * 0.5
 
     def log_diagnostics(self, paths, prefix=''):
-        progs = [np.mean(path["env_infos"]["reward_forward"]) for path in paths]
-        ctrl_cost = [-np.mean(path["env_infos"]["reward_ctrl"]) for path in paths]
-
-        logger.logkv(prefix + 'AverageForwardReturn', np.mean(progs))
-        logger.logkv(prefix + 'MaxForwardReturn', np.max(progs))
-        logger.logkv(prefix + 'MinForwardReturn', np.min(progs))
-        logger.logkv(prefix + 'StdForwardReturn', np.std(progs))
-
-        logger.logkv(prefix + 'AverageCtrlCost', np.mean(ctrl_cost))
+        return
 
 
 if __name__ == "__main__":

@@ -83,6 +83,14 @@ class Trainer(object):
                 logger.log("Sampling set of tasks/goals for this meta-batch...")
 
                 self.sampler.update_tasks(train=1)
+                self.policy.switch_to_pre_update()
+                paths = self.sampler.obtain_samples(log=False, log_prefix='Test 0',test=True)
+                samples_data = self.sample_processor.process_samples(paths, log=False, log_prefix='Test 0')
+                self.algo._adapt(samples_data)
+                paths = self.sampler.obtain_samples(log=False, log_prefix='Test 1', test=True)
+                self.sample_processor.process_samples(paths, log='reward', log_prefix='Test 1')
+
+                self.sampler.update_tasks(train=1)
                 self.policy.switch_to_pre_update()  # Switch to pre-update policy
 
                 all_samples_data, all_paths = [], []

@@ -56,7 +56,7 @@ class MetaSampler(Sampler):
         assert len(tasks) == self.meta_batch_size
         self.vec_env.set_tasks(tasks)
 
-    def obtain_samples(self, log=False, log_prefix=''):
+    def obtain_samples(self, log=False, log_prefix='',test=False):
         """
         Collect batch_size trajectories from each task
 
@@ -108,7 +108,7 @@ class MetaSampler(Sampler):
                 # append new samples to running paths
                 running_paths[idx]["observations"].append(observation)
                 running_paths[idx]["actions"].append(action)
-                running_paths[idx]["rewards"].append(reward)
+                running_paths[idx]["rewards"].append(reward if not test else env_info['sparse_reward'])
                 running_paths[idx]["env_infos"].append(env_info)
                 running_paths[idx]["agent_infos"].append(agent_info)
 
@@ -128,8 +128,8 @@ class MetaSampler(Sampler):
             n_samples += new_samples
             obses = next_obses
         pbar.stop()
-
-        self.total_timesteps_sampled += self.total_samples
+        if not test:
+            self.total_timesteps_sampled += self.total_samples
         if log:
             logger.logkv(log_prefix + "PolicyExecTime", policy_time)
             logger.logkv(log_prefix + "EnvExecTime", env_time)
