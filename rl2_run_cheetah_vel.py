@@ -1,5 +1,5 @@
 from maml_zoo.baselines.linear_baseline import LinearFeatureBaseline
-from maml_zoo.envs.mujoco_envs.walker_vel import WalkerEnv_sparse
+from maml_zoo.envs.mujoco_envs.cheetah_vel import HalfCheetahRandVelEnvSparse
 from maml_zoo.envs.rl2_env import rl2env
 from maml_zoo.algos.vpg import VPG
 from maml_zoo.algos.ppo import PPO
@@ -17,7 +17,7 @@ maml_zoo_path = '.'
 
 def main(config):
     baseline = LinearFeatureBaseline()
-    env = rl2env(WalkerEnv_sparse())
+    env = rl2env(HalfCheetahRandVelEnvSparse())
     obs_dim = np.prod(env.observation_space.shape) + np.prod(env.action_space.shape) + 1 + 1
     policy = GaussianRNNPolicy(
             name="meta-policy",
@@ -65,9 +65,9 @@ def main(config):
 
 if __name__=="__main__":
     idx = np.random.randint(0, 10000000000)
-    data_path =  './data/rl2/walker-vel/test_%d' % idx
+    data_path =  './data/rl2/cheetah-vel/test_%d' % idx
     logger.configure(dir=data_path, format_strs=['stdout', 'log', 'csv'],
                      snapshot_mode='last_gap')
-    config = json.load(open(maml_zoo_path + "/configs/rl2_config_walker_vel.json", 'r'))
+    config = json.load(open(maml_zoo_path + "/configs/rl2_config_cheetah_vel.json", 'r'))
     json.dump(config, open(data_path + '/params.json', 'w'))
     main(config)
