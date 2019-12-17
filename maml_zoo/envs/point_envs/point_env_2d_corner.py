@@ -169,6 +169,7 @@ class SparsePointEnv(PointEnv):
     def __init__(self, randomize_tasks=True, n_tasks=1000, goal_radius=0.3):
         super().__init__(randomize_tasks, n_tasks)
         self.goal_radius = goal_radius
+        self.cnt = 0
 
         if randomize_tasks:
             np.random.seed(1337)
@@ -191,13 +192,16 @@ class SparsePointEnv(PointEnv):
 
     def reset_model(self):
         self._state = np.array([0, 0])
+        self.cnt = 0
         return self._get_obs()
 
     def reset(self):
         self._state = np.array([0, 0])
+        self.cnt = 0
         return self._get_obs()
 
     def step(self, action):
+        action = np.clip(action,-0.1,0.1)
         ob, reward, done, d = super().step(action)
         sparse_reward = self.sparsify_rewards(reward)
         # make sparse rewards positive
@@ -205,16 +209,23 @@ class SparsePointEnv(PointEnv):
             sparse_reward += 1
         d.update({'sparse_reward': sparse_reward})
         reward = sparse_reward
+        self.cnt = self.cnt + 1
+        if self.cnt %32==0:
+            done = True
         return ob, reward, done, d
 
     def log_diagnostics(self, *args):
         pass
 
     def sample_tasks(self, n_tasks,train=1):
-        if train:
-            return [self.goals[idx] for idx in np.random.choice(range(1000), size=n_tasks)]
-        else:
-            return [self.goals[idx] for idx in (np.random.choice(range(20), size=n_tasks)+80)]
+        radius = 1.0
+        angles = np.linspace(0, np.pi, num=n_tasks)
+        xs = radius * np.cos(angles)
+        ys = radius * np.sin(angles)
+        goals = np.stack([xs, ys], axis=1)
+        np.random.shuffle(goals)
+        goals = goals.tolist()
+        return goals
 
     def set_task(self, task):
         self.goal = task
