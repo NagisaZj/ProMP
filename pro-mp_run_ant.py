@@ -1,5 +1,5 @@
 from meta_policy_search.baselines.linear_baseline import LinearFeatureBaseline
-from meta_policy_search.envs.mujoco_envs.half_cheetah_rand_vel import  HalfCheetahRandVelEnvSparse
+from meta_policy_search.envs.mujoco_envs.ant_rand_goal import  AntRandGoalEnv
 from meta_policy_search.envs.normalized_env import normalize
 from meta_policy_search.meta_algos.pro_mp import ProMP
 from meta_policy_search.meta_trainer import Trainer
@@ -81,7 +81,7 @@ if __name__=="__main__":
 
     parser = argparse.ArgumentParser(description='ProMP: Proximal Meta-Policy Search')
     parser.add_argument('--config_file', type=str, default='', help='json file with run specifications')
-    parser.add_argument('--dump_path', type=str, default=meta_policy_search_path + '/data/pro-mp/cheetah/run_%d' % idx)
+    parser.add_argument('--dump_path', type=str, default=meta_policy_search_path + '/data/pro-mp/ant/run_%d' % idx)
 
     args = parser.parse_args()
 
@@ -97,11 +97,11 @@ if __name__=="__main__":
 
             'baseline': 'LinearFeatureBaseline',
 
-            'env': 'HalfCheetahRandVelEnvSparse',
+            'env': 'AntRandGoalEnv',
 
             # sampler config
-            'rollouts_per_meta_task': 2,
-            'max_path_length': 64,
+            'rollouts_per_meta_task': 4,
+            'max_path_length': 32,
             'parallel': True,
 
             # sample processor config
