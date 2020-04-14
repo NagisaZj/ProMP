@@ -71,6 +71,12 @@ def shift_advantages_to_positive(advantages):
     return (advantages - np.min(advantages)) + 1e-8
 
 
+def erl2_filter(x,mpl):
+    #print(x.shape,x)
+    x[:mpl]=0
+    #print(x)
+    return x
+
 def discount_cumsum(x, discount):
     """
     See https://docs.scipy.org/doc/scipy/reference/tutorial/signal.html#difference-equation-filtering

@@ -9,6 +9,7 @@ from gym.envs.mujoco.reacher import ReacherEnv as ReacherEnv_
 class ReacherGoalEnv_sparse(ReacherEnv_):
     def __init__(self, task={}, n_tasks=100, randomize_tasks=True, **kwargs):
         self.goals = self.sample_tasks(n_tasks)
+        self.cnt = 0
         self.goal_radius = 0.09
         self._goal = [0,0,0.01]
         super(ReacherGoalEnv_sparse, self).__init__()
@@ -19,6 +20,10 @@ class ReacherGoalEnv_sparse(ReacherEnv_):
         return range(len(self.goals))
 
     def step(self, action):
+
+
+        #print(action)
+        action = np.clip(action,-0.05,0.05)
         tmp_finger = self.get_body_com("fingertip")
         vec = self.get_body_com("fingertip") - self._goal
 
@@ -34,6 +39,10 @@ class ReacherGoalEnv_sparse(ReacherEnv_):
         done = False
         env_infos = dict(finger=tmp_finger.tolist(),reward_dist=reward_dist, reward_ctrl=reward_ctrl,sparse_reward=sparse_reward,goal=self._goal)
         #print(env_infos['finger'])
+        self.cnt = self.cnt + 1
+        if self.cnt %64 ==0:
+            self.reset()
+            self.cnt=0
         return ob, reward, done, env_infos
 
     def sparsify_rewards(self, r):
@@ -62,6 +71,7 @@ class ReacherGoalEnv_sparse(ReacherEnv_):
     def reset_task(self, idx):
         ''' reset goal AND reset the agent '''
         self._goal = self.goals[idx]
+        self.cnt = 0
         self.reset()
 
     def set_task(self, task):

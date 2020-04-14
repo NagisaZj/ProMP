@@ -121,6 +121,9 @@ class GaussianRNNPolicy(Policy):
             raise AssertionError
 
         sess = tf.get_default_session()
+        #print(observations.shape)
+        #for t in self._hidden_state:
+        #    print(t.shape)
         means, logs_stds, self._hidden_state = sess.run([self.mean_var, self.log_std_var,  self.next_hidden_var],
                                                      feed_dict={self.obs_var: observations,
                                                                 self.hidden_var: self._hidden_state})
@@ -198,11 +201,14 @@ class GaussianRNNPolicy(Policy):
         raise ["mean", "log_std"]
 
     def reset(self, dones=None):
+        #print('r',dones)
         sess = tf.get_default_session()
         _hidden_state = sess.run(self._zero_hidden)
         if self._hidden_state is None:
+            #print('None')
             self._hidden_state = sess.run(self.cell.zero_state(len(dones), tf.float32))
         else:
+            #print('set')
             if isinstance(self._hidden_state, tf.contrib.rnn.LSTMStateTuple):
                 self._hidden_state.c[dones] = _hidden_state.c
                 self._hidden_state.h[dones] = _hidden_state.h

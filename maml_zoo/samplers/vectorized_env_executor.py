@@ -22,7 +22,7 @@ class MAMLIterativeEnvExecutor(object):
         self.ts = np.zeros(len(self.envs), dtype='int')  # time steps
         self.max_path_length = max_path_length
 
-    def step(self, actions):
+    def step(self, actions,test=False):
         """
         Steps the wrapped environments with the provided actions
 
@@ -36,7 +36,7 @@ class MAMLIterativeEnvExecutor(object):
         """
         assert len(actions) == self.num_envs
 
-        all_results = [env.step(a) for (a, env) in zip(actions, self.envs)]
+        all_results = [env.step(a,test) for (a, env) in zip(actions, self.envs)]
 
         # stack results split to obs, rewards, ...
         obs, rewards, dones, env_infos = list(map(list, zip(*all_results)))

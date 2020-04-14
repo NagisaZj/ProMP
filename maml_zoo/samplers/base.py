@@ -53,17 +53,22 @@ class SampleProcessor(object):
             gae_lambda=1,
             normalize_adv=False,
             positive_adv=False,
+            exp_episode_length=None,
+            predictor=None,
+            intr_rew_weight=0
             ):
 
         assert 0 <= discount <= 1.0, 'discount factor must be in [0,1]'
         assert 0 <= gae_lambda <= 1.0, 'gae_lambda must be in [0,1]'
         assert hasattr(baseline, 'fit') and hasattr(baseline, 'predict')
-        
+        self.predictor=predictor
+        self.intr_rew_weight=intr_rew_weight
         self.baseline = baseline
         self.discount = discount
         self.gae_lambda = gae_lambda
         self.normalize_adv = normalize_adv
         self.positive_adv = positive_adv
+        self.exp_episode_length = exp_episode_length
 
     def process_samples(self, paths, log=False, log_prefix=''):
         """
@@ -102,6 +107,8 @@ class SampleProcessor(object):
 
         # 1) compute discounted rewards (returns)
         for idx, path in enumerate(paths):
+            path['ori_rewards'] = path['rewards']
+            path["rewards"] = utils.erl2_filter(path["rewards"],self.exp_episode_length)
             path["returns"] = utils.discount_cumsum(path["rewards"], self.discount)
 
         # 2) fit baseline estimator using the path returns and predict the return baselines
@@ -112,7 +119,7 @@ class SampleProcessor(object):
         paths = self._compute_advantages(paths, all_path_baselines)
 
         # 4) stack path data
-        observations, actions, rewards, dones, returns, advantages, env_infos, agent_infos = self._concatenate_path_data(paths)
+        observations, actions, rewards, dones, returns, advantages, env_infos, agent_infos,_ = self._concatenate_path_data(paths)
 
         # 5) if desired normalize / shift advantages
         if self.normalize_adv:
@@ -142,9 +149,10 @@ class SampleProcessor(object):
 
         if log == 'reward':
             logger.logkv(log_prefix + 'AverageReturn', np.mean(undiscounted_returns))
+            logger.logkv('AverageReturn_all_test_tasks_last', last_return)
 
         elif log == 'all' or log is True:
-            logger.logkv('AverageReturn_all_test_tasks_last', last_return)
+            #logger.logkv('AverageReturn_all_test_tasks_last', last_return)
             logger.logkv(log_prefix + 'AverageDiscountedReturn', average_discounted_return)
             logger.logkv(log_prefix + 'AverageReturn', np.mean(undiscounted_returns))
             logger.logkv(log_prefix + 'NumTrajs', len(paths))

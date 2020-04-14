@@ -61,7 +61,7 @@ class MAMLSampler(Sampler):
         assert len(tasks) == self.meta_batch_size
         self.vec_env.set_tasks(tasks)
 
-    def obtain_samples(self, log=False, log_prefix=''):
+    def obtain_samples(self, log=False, log_prefix='',test=False):
         """
         Collect batch_size trajectories from each task
 
@@ -102,6 +102,8 @@ class MAMLSampler(Sampler):
             t = time.time()
             actions = np.concatenate(actions) # stack meta batch
             next_obses, rewards, dones, env_infos = self.vec_env.step(actions)
+            #if test:
+            #    print(rewards,env_infos[0]['sparse_reward'])
             env_time += time.time() - t
 
             #  stack agent_infos and if no infos were provided (--> None) create empty dicts

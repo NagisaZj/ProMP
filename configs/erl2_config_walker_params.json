@@ -1,0 +1,21 @@
+{
+  "algo": "RL2",
+  "meta_batch_size": 200,
+  "hidden_sizes": [
+    64
+  ],
+  "rollouts_per_meta_task": 1,
+  "parallel": true,
+  "max_path_length":256,
+  "exp_episode_length": 192,
+  "discount": 0.99,
+  "gae_lambda": 1.0,
+  "normalize_adv": true,
+  "positive_adv": false,
+  "learning_rate": 1e-3,
+  "max_epochs": 2,
+  "cell_type": "lstm",
+  "num_minibatches": 1,
+  "n_itr": 10000,
+  "util_params": {"base_log_dir":"outputERL2"}
+}

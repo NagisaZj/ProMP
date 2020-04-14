@@ -28,6 +28,7 @@ class WalkerVelEnv(Walker2dEnv_):
         #self._goal_vel = self.tasks[0].get('velocity', 0.0)
         #self._goal = self._goal_vel
         super(WalkerVelEnv, self).__init__()
+        self.cnt = 0
 
     def step(self, action):
         xposbefore = self.sim.data.qpos[0]
@@ -43,6 +44,10 @@ class WalkerVelEnv(Walker2dEnv_):
         done = False
         infos = dict(reward_forward=forward_reward,
             reward_ctrl=-ctrl_cost, task=self._task, velocity=forward_vel)
+        self.cnt = self.cnt + 1
+        if self.cnt % 64 == 0:
+            self.reset()
+            self.cnt = 0
         return (observation, reward, done, infos)
 
     def sample_tasks(self, num_tasks):
@@ -78,7 +83,7 @@ class WalkerEnv_sparse(WalkerVelEnv):
         model-based control", 2012
         (https://homes.cs.washington.edu/~todorov/papers/TodorovIROS12.pdf)
     """
-    def __init__(self, task={}, n_tasks=2, randomize_tasks=True,goal_radius=0.5):
+    def __init__(self, task={}, n_tasks=100, randomize_tasks=True,goal_radius=0.5):
         self._task = task
         self.cnt = 0
         self.tasks = self.sample_tasks(n_tasks)
@@ -106,7 +111,8 @@ class WalkerEnv_sparse(WalkerVelEnv):
             reward_ctrl=-ctrl_cost, task=self._task, velocity=forward_vel,sparse_reward=sparse_reward)
         self.cnt = self.cnt + 1
         if self.cnt %64==0:
-            done = 1
+            self.reset()
+            self.cnt=0
         return (observation, reward, done, infos)
 
     def sample_tasks(self, num_tasks):

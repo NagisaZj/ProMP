@@ -79,9 +79,12 @@ class RL2Env(Serializable):
     def __setstate__(self, d):
         Serializable.__setstate__(self, d)
 
-    def step(self, action):
+    def step(self, action,test=False):
         wrapped_step = self._wrapped_env.step(action)
         next_obs, reward, done, info = wrapped_step
+        if test:
+            #print(info)
+            reward = info['sparse_reward']
         next_obs = np.concatenate([next_obs, action, [reward], [done]])
         return next_obs, reward, done, info
 

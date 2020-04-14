@@ -211,7 +211,8 @@ class SparsePointEnv(PointEnv):
         reward = sparse_reward
         self.cnt = self.cnt + 1
         if self.cnt %32==0:
-            done = True
+            self.reset()
+            self.cnt=0
         return ob, reward, done, d
 
     def log_diagnostics(self, *args):

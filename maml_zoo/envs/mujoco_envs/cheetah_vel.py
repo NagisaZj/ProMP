@@ -97,7 +97,9 @@ class HalfCheetahRandVelEnvSparse(MetaEnv, MujocoEnv, gym.utils.EzPickle):
         done = False
         self.cnt = self.cnt + 1
         if self.cnt %64 ==0:
-            done = 1
+            self.reset()
+            self.cnt=0
+        #reward = reward * 100
         return ob, reward, done, dict(forward_vel=forward_vel, reward_run=reward_run, reward_ctrl=reward_ctrl)
 
     def _get_obs(self):
