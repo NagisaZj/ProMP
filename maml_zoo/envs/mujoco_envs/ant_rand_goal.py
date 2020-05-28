@@ -43,7 +43,7 @@ class AntRandGoalEnv(MetaEnv, gym.utils.EzPickle, MujocoEnv):
         return r
 
     def step(self, action):
-        #action = np.clip(action,-0.1,0.1)
+        action = np.clip(action,-0.1,0.1)
         self.do_simulation(action, self.frame_skip)
         xposafter = np.array(self.get_body_com("torso"))
 

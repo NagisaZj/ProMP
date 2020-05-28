@@ -208,6 +208,7 @@ class SparsePointEnv(PointEnv):
         if reward >= -self.goal_radius:
             sparse_reward += 1
         d.update({'sparse_reward': sparse_reward})
+        d.update({'goal': self._goal})
         reward = sparse_reward
         self.cnt = self.cnt + 1
         if self.cnt %32==0:

@@ -1,5 +1,6 @@
 from maml_zoo.samplers.base import SampleProcessor
 import numpy as np
+import pickle
 from maml_zoo.utils import utils
 
 class RL2SampleProcessor(SampleProcessor):
@@ -65,7 +66,7 @@ class RL2SampleProcessor(SampleProcessor):
 
 class ERL2SampleProcessor(SampleProcessor):
 
-    def process_samples(self, paths_meta_batch, log=False, log_prefix='',compute_intr=False):
+    def process_samples(self, paths_meta_batch, log=False, log_prefix='',compute_intr=False,itr=None):
         """
         Processes sampled paths. This involves:
             - computing discounted rewards (returns)
@@ -124,6 +125,10 @@ class ERL2SampleProcessor(SampleProcessor):
             agent_infos=agent_infos,
             ori_rewards=ori_rews
         )
+        if 'test' in log_prefix:
+            filename='/home/zj/Desktop/ProMP/info.pkl'
+            with open(filename, 'wb') as f:
+                pickle.dump(samples_data, f, protocol=pickle.HIGHEST_PROTOCOL)
         return samples_data
 
     def _stack_path_data(self, paths):

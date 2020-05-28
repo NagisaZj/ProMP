@@ -69,7 +69,7 @@ class Trainer(object):
                 self.task = self.env.sample_tasks(self.sampler.meta_batch_size)
                 self.sampler.set_tasks(self.task)
                 paths = self.sampler.obtain_samples(log=True, log_prefix='test',test=True)
-                self.sample_processor.process_samples(paths, log='reward', log_prefix='test')
+                self.sample_processor.process_samples(paths, log='reward', log_prefix='test',itr=itr)
 
 
                 self.task = self.env.sample_tasks(self.sampler.meta_batch_size)
