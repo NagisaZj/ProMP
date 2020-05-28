@@ -1,6 +1,7 @@
 from meta_policy_search.samplers.base import SampleProcessor
 from meta_policy_search.samplers.dice_sample_processor import DiceSampleProcessor
 from meta_policy_search.utils import utils
+import pickle
 import numpy as np
 
 class MetaSampleProcessor(SampleProcessor):
@@ -39,7 +40,10 @@ class MetaSampleProcessor(SampleProcessor):
         # 7) compute normalized trajectory-batch rewards (for E-MAML)
         overall_avg_reward = np.mean(np.concatenate([samples_data['rewards'] for samples_data in samples_data_meta_batch]))
         overall_avg_reward_std = np.std(np.concatenate([samples_data['rewards'] for samples_data in samples_data_meta_batch]))
-
+        filename = '/home/zj/Desktop/ProMP/info.pkl'
+        if log=='all':
+            with open(filename, 'wb') as f:
+                pickle.dump(samples_data, f, protocol=pickle.HIGHEST_PROTOCOL)
         for samples_data in samples_data_meta_batch:
             samples_data['adj_avg_rewards'] = (samples_data['rewards'] - overall_avg_reward) / (overall_avg_reward_std + 1e-8)
 
